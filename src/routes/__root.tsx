@@ -10,6 +10,9 @@ import { GlobalOverlayScrollbar } from "~/components/common/overlay-scrollbar"
 import { Footer } from "~/components/footer"
 import { Toast } from "~/components/common/toast"
 import { SearchBar } from "~/components/common/search-bar"
+import { useOnReload } from "~/hooks/useOnReload"
+import { useSync } from "~/hooks/useSync"
+import { usePWA } from "~/hooks/usePWA"
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
