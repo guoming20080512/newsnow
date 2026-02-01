@@ -36,7 +36,7 @@ export function NavBar() {
       </button>
       {/* 交易所链接 */}
       <a
-        href="https://accounts.usnbweb.biz/zh-CN/register?ref=ZPY2OGY7&return_to=aHR0cHM6Ly93d3cudXNuYndlYi5iaXovemgtQ04vam9pbj9yZWY9WlBZMk9HWTc"
+        href="https://www.binance.com/zh-CN/join?ref=K2A12GI8"
         target="_blank"
         rel="noopener noreferrer"
         className={$(
@@ -47,7 +47,7 @@ export function NavBar() {
         币安Binance交易所
       </a>
       <a
-        href="https://www.nocmjsdty.com/join/10845390214"
+        href="https://www.firgrouxywebb.com/join/14313340"
         target="_blank"
         rel="noopener noreferrer"
         className={$(
