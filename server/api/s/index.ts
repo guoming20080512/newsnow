@@ -1,7 +1,12 @@
 import type { SourceID, SourceResponse } from "@shared/types"
+import { sources } from "@shared/sources"
 import { getters } from "#/getters"
 import { getCacheTable } from "#/database/cache"
 import type { CacheInfo } from "#/types"
+import { logger } from "#/utils/logger"
+
+// 缓存失效时间（1小时）
+const TTL = 60 * 60 * 1000
 
 export default defineEventHandler(async (event): Promise<SourceResponse> => {
   try {

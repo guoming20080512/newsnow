@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router"
 import { useIsFetching } from "@tanstack/react-query"
 import type { SourceID } from "@shared/types"
+import { useAtomValue } from "jotai"
+import { useCallback } from "react"
 import { NavBar } from "../navbar"
 import { currentSourcesAtom, goToTopAtom } from "~/atoms"
+import { useRefetch } from "~/hooks/useRefetch"
 
 function GoTop() {
   const { ok, fn: goToTop } = useAtomValue(goToTopAtom)

@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://news.abfjwndjwkdbwkjdnej.store/sitemap.xml
+
+# 禁止爬取的路径
+Disallow: /api/
+Disallow: /__unocss/
