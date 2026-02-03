@@ -1,4 +1,91 @@
 {
+  "elonmusk": {
+    "name": "马斯克推特",
+    "type": "hottest",
+    "column": "world",
+    "home": "https://x.com/elonmusk",
+    "color": "blue",
+    "interval": 300000
+  },
+  "coindesk": {
+    "name": "CoinDesk",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://www.coindesk.com",
+    "color": "blue",
+    "interval": 1800000
+  },
+  "coindesk-cn": {
+    "title": "CoinDesk中文",
+    "name": "CoinDesk",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://www.coindesk.com/zh/latest-crypto-news",
+    "color": "blue",
+    "interval": 1800000
+  },
+  "cointelegraph": {
+    "title": "Cointelegraph英文",
+    "name": "Cointelegraph",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://cointelegraph.com",
+    "color": "purple",
+    "interval": 1800000
+  },
+  "cointelegraph-cn": {
+    "title": "Cointelegraph中文",
+    "name": "Cointelegraph",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://cn.cointelegraph.com/category/latest-news",
+    "color": "purple",
+    "interval": 1800000
+  },
+  "beincrypto": {
+    "title": "BeInCrypto英文",
+    "name": "BeInCrypto",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://beincrypto.com",
+    "color": "teal",
+    "interval": 1800000
+  },
+  "beincrypto-cn": {
+    "title": "BeInCrypto中文",
+    "name": "BeInCrypto",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://cn.beincrypto.com/",
+    "color": "teal",
+    "interval": 1800000
+  },
+  "decrypt": {
+    "title": "Decrypt英文",
+    "name": "Decrypt",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://decrypt.co/news",
+    "color": "cyan",
+    "interval": 1800000
+  },
+  "decrypt-zh": {
+    "title": "Decrypt中文",
+    "name": "Decrypt",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://decrypt.co/zh-Hans",
+    "color": "cyan",
+    "interval": 1800000
+  },
+  "bitcoinmagazine": {
+    "name": "Bitcoin Magazine",
+    "type": "hottest",
+    "column": "finance",
+    "home": "https://bitcoinmagazine.com",
+    "color": "orange",
+    "interval": 1800000
+  },
   "v2ex": {
     "redirect": "v2ex-share",
     "name": "V2EX",

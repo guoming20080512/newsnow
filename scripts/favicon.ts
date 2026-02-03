@@ -27,13 +27,46 @@ async function main() {
   await Promise.all(
     Object.entries(originSources).map(async ([id, source]) => {
       try {
-        const icon = join(iconsDir, `${id}.png`)
-        if (fs.existsSync(icon)) {
-          // consola.info(`${id}: icon exists. skip.`)
+        // 检查多种扩展名的图标文件
+        const extensions = [".png", ".jpg", ".jpeg"]
+        let iconExists = false
+
+        // 检查与数据源 ID 完全匹配的图标文件
+        for (const ext of extensions) {
+          const iconPath = join(iconsDir, `${id}${ext}`)
+          if (fs.existsSync(iconPath)) {
+            // consola.info(`${id}: icon exists. skip.`)
+            iconExists = true
+            break
+          }
+        }
+
+        // 如果不存在，检查是否是中文版本的数据源，如果是，检查对应的英文版本图标文件
+        if (!iconExists) {
+          // 检查是否是中文版本的数据源 (xxx-cn 或 xxx-zh)
+          const isChineseVersion = id.includes("-cn") || id.includes("-zh")
+          if (isChineseVersion) {
+            // 获取对应的英文版本数据源 ID
+            const englishId = id.replace("-cn", "").replace("-zh", "")
+
+            // 检查英文版本的图标文件
+            for (const ext of extensions) {
+              const iconPath = join(iconsDir, `${englishId}${ext}`)
+              if (fs.existsSync(iconPath)) {
+                // consola.info(`${id}: using icon from ${englishId}. skip.`)
+                iconExists = true
+                break
+              }
+            }
+          }
+        }
+
+        if (iconExists) {
           return
         }
+
         if (!source.home) return
-        await downloadImage(`https://icons.duckduckgo.com/ip3/${source.home.replace(/^https?:\/\//, "").replace(/\/$/, "")}.ico`, icon, id)
+        await downloadImage(`https://icons.duckduckgo.com/ip3/${source.home.replace(/^https?:\/\//, "").replace(/\/$/, "")}.ico`, join(iconsDir, `${id}.png`), id)
       } catch (e) {
         consola.error(id, "\n", e)
       }

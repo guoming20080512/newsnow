@@ -1,3 +1,6 @@
+import type { NewsItem } from "@shared/types"
+import { myFetch } from "#/utils/fetch"
+
 interface Res {
   data: {
     result: {
@@ -9,24 +12,34 @@ interface Res {
   }
 }
 
-export default defineSource(async () => {
-  const timestamp = Date.now()
-  const url = `https://gw-c.nowcoder.com/api/sparta/hot-search/top-hot-pc?size=20&_=${timestamp}&t=`
-  const res: Res = await myFetch(url)
-  return res.data.result
-    .map((k) => {
-      let url, id
+export default defineSource({
+  nowcoder: async () => {
+    const timestamp = Date.now()
+    const url = `https://gw-c.nowcoder.com/api/sparta/hot-search/top-hot-pc?size=20&_=${timestamp}&t=`
+    const res: Res = await myFetch(url)
+    const news: NewsItem[] = []
+
+    for (const k of res.data.result) {
+      let itemUrl: string | undefined
+      let itemId: string | undefined
+
       if (k.type === 74) {
-        url = `https://www.nowcoder.com/feed/main/detail/${k.uuid}`
-        id = k.uuid
+        itemUrl = `https://www.nowcoder.com/feed/main/detail/${k.uuid}`
+        itemId = k.uuid
       } else if (k.type === 0) {
-        url = `https://www.nowcoder.com/discuss/${k.id}`
-        id = k.id
+        itemUrl = `https://www.nowcoder.com/discuss/${k.id}`
+        itemId = k.id
       }
-      return {
-        id,
-        title: k.title,
-        url,
+
+      if (itemUrl && itemId && k.title) {
+        news.push({
+          url: itemUrl,
+          title: k.title,
+          id: itemId,
+        })
       }
-    })
+    }
+
+    return news
+  },
 })

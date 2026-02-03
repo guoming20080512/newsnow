@@ -13,6 +13,97 @@ const Time = {
 }
 
 export const originSources = {
+  // 马斯克推特（放在最前面）
+  "elonmusk": {
+    name: "马斯克推特",
+    column: "world",
+    color: "blue",
+    type: "hottest",
+    interval: Time.Fast,
+    home: "https://x.com/elonmusk",
+  },
+  // 加密货币相关数据源（放在最前面）
+  "coindesk": {
+    name: "CoinDesk",
+    column: "finance",
+    color: "blue",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://www.coindesk.com",
+  },
+  "coindesk-cn": {
+    name: "CoinDesk",
+    column: "finance",
+    color: "blue",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://www.coindesk.com/zh/latest-crypto-news",
+    title: "CoinDesk中文",
+  },
+  "cointelegraph": {
+    name: "Cointelegraph",
+    column: "finance",
+    color: "purple",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://cointelegraph.com",
+    title: "Cointelegraph英文",
+  },
+  "cointelegraph-cn": {
+    name: "Cointelegraph",
+    column: "finance",
+    color: "purple",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://cn.cointelegraph.com/category/latest-news",
+    title: "Cointelegraph中文",
+  },
+  "beincrypto": {
+    name: "BeInCrypto",
+    column: "finance",
+    color: "teal",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://beincrypto.com",
+    title: "BeInCrypto英文",
+  },
+  "beincrypto-cn": {
+    name: "BeInCrypto",
+    column: "finance",
+    color: "teal",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://cn.beincrypto.com/",
+    title: "BeInCrypto中文",
+  },
+  "decrypt": {
+    name: "Decrypt",
+    column: "finance",
+    color: "cyan",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://decrypt.co/news",
+    title: "Decrypt英文",
+  },
+  "decrypt-zh": {
+    name: "Decrypt",
+    column: "finance",
+    color: "cyan",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://decrypt.co/zh-Hans",
+    title: "Decrypt中文",
+  },
+  "bitcoinmagazine": {
+    name: "Bitcoin Magazine",
+    column: "finance",
+    color: "orange",
+    type: "hottest",
+    interval: Time.Common,
+    home: "https://bitcoinmagazine.com",
+  },
+
+  // 其他数据源
   "v2ex": {
     name: "V2EX",
     color: "slate",
@@ -483,6 +574,7 @@ export const originSources = {
       },
     },
   },
+
 } as const satisfies Record<string, OriginSource>
 
 export function genSources() {

@@ -41,7 +41,19 @@ const hotRankList = defineSource(async () => {
           + "&data_source=v7_rec_sec_hot_rank_list&tempId=85&count=30&block_id=hot_ranklist"
           + "&device=14a4b5ba98e790dce6dc07482447cf48&from=webapp" // 这里的device这个参数是必须的，没有的话会直接查询报错
   const resp = await myFetch<WapResp>(url, {
-    headers: { Referer: "https://www.iqiyi.com" },
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Connection": "keep-alive",
+      "Upgrade-Insecure-Requests": "1",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Referer": "https://www.iqiyi.com",
+    },
   })
 
   return resp?.items[0]?.video[0]?.data.map((item) => {

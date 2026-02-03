@@ -42,7 +42,9 @@ export function RollopGlob(): Plugin {
 
       const contents = files.map((file) => {
         const r = file.replace("/index", "")
-        const name = path.basename(r, path.extname(r))
+        let name = path.basename(r, path.extname(r))
+        // 将带连字符的文件名转换为驼峰命名法，以生成有效的 TypeScript 变量名
+        name = name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
         return `export * as ${name} from '${file}'\n`
       }).join("\n")
 
@@ -70,7 +72,9 @@ async function writeTypeDeclaration(map: GlobMap, filename: string) {
       const relative = `./${relatePath(file)}`.replace(/\.tsx?$/, "")
       const r = file.replace("/index", "")
       const fileName = path.basename(r, path.extname(r))
-      declare += `  export const ${fileName}: typeof import('${relative}')\n`
+      // 将带连字符的文件名转换为驼峰命名法，以生成有效的 TypeScript 变量名
+      const variableName = fileName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
+      declare += `  export const ${variableName}: typeof import('${relative}')\n`
     }
     declare += `}\n`
   }
