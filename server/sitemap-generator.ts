@@ -1,10 +1,7 @@
-import fs from "node:fs"
-import path from "node:path"
-import process from "node:process"
-import dayjs from "dayjs/esm"
+import dayjs from "dayjs"
 import { sources } from "../shared/sources"
 
-const BASE_URL = process.env.BASE_URL || "https://news.abfjwndjwkdbwkjdnej.store"
+const BASE_URL = (process.env.BASE_URL || "https://news.abfjwndjwkdbwkjdnej.store").replace(/\/+$/, "")
 
 export async function generateSitemap() {
   const urls = [
@@ -41,10 +38,5 @@ export async function generateSitemap() {
     .join("")}
 </urlset>`
 
-  const outputPath = path.resolve(process.cwd(), "public/sitemap.xml")
-  fs.writeFileSync(outputPath, sitemapXml, "utf-8")
-  console.log(`Sitemap生成成功，共${urls.length}个URL`)
   return sitemapXml
 }
-
-generateSitemap()
