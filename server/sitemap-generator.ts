@@ -7,7 +7,7 @@ import { getCacheTable } from "./database/cache"
 
 const BASE_URL = process.env.BASE_URL || "https://newsnow.busiyi.world"
 
-async function generateSitemap() {
+export async function generateSitemap() {
   const urls = [
     {
       loc: BASE_URL,
@@ -57,9 +57,3 @@ async function generateSitemap() {
   console.log(`Sitemap生成成功，共${urls.length}个URL`)
   return sitemapXml
 }
-
-export default defineEventHandler(async () => {
-  const sitemapXml = await generateSitemap()
-  setHeader(event, "Content-Type", "application/xml; charset=utf-8")
-  return sitemapXml
-})
