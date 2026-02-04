@@ -93,7 +93,7 @@ import dayjs from 'dayjs/esm' // 匹配项目的dayjs导入方式
 import { getAllSources } from './sources' // 需在server/sources/index.ts暴露所有数据源
 
 // 项目基础URL（读取环境变量，匹配README中的配置）
-const BASE_URL = process.env.BASE_URL || 'https://newsnow.busiyi.world'
+const BASE_URL = process.env.BASE_URL || 'https://news.abfjwndjwkdbwkjdnej.store'
 
 async function generateSitemap() {
   const urls = [

@@ -2,11 +2,14 @@ import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import dayjs from "dayjs/esm"
+import { config as dotenvConfig } from "dotenv"
 import { sources } from "../shared/sources"
 
-const BASE_URL = process.env.BASE_URL || "https://news.abfjwndjwkdbwkjdnej.store"
+dotenvConfig({ path: path.resolve(process.cwd(), ".env.server") })
 
-export async function generateSitemap() {
+const BASE_URL = process.env.BASE_URL || "https://newsnow.busiyi.world"
+
+function generateSitemap() {
   const urls = [
     {
       loc: BASE_URL,
@@ -44,7 +47,6 @@ export async function generateSitemap() {
   const outputPath = path.resolve(process.cwd(), "public/sitemap.xml")
   fs.writeFileSync(outputPath, sitemapXml, "utf-8")
   console.log(`Sitemap生成成功，共${urls.length}个URL`)
-  return sitemapXml
 }
 
 generateSitemap()
