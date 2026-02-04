@@ -1,8 +1,11 @@
 import process from "node:process"
 import { join } from "node:path"
 import viteNitro from "vite-plugin-with-nitro"
+import { config as dotenvConfig } from "dotenv"
 import { RollopGlob } from "./tools/rollup-glob"
 import { projectDir } from "./shared/dir"
+
+dotenvConfig({ path: join(projectDir, ".env.server") })
 
 const nitroOption: Parameters<typeof viteNitro>[0] = {
   experimental: {
@@ -36,11 +39,6 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
 if (process.env.VERCEL) {
   nitroOption.preset = "vercel-edge"
   nitroOption.database = undefined
-  // nitroOption.vercel = {
-  //   config: {
-  //     cache: []
-  //   },
-  // }
 } else if (process.env.CF_PAGES) {
   nitroOption.preset = "cloudflare-pages"
   nitroOption.unenv = {
