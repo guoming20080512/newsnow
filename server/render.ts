@@ -2,11 +2,33 @@ import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import { sources } from "../shared/sources"
+import { fixedColumnIds, metadata } from "../shared/metadata"
 import { getCacheTable } from "./database/cache"
 
 async function getTemplate() {
   const templatePath = path.resolve(process.cwd(), "dist/index.html")
   return fs.promises.readFile(templatePath, "utf-8")
+}
+
+function generateNavBarHtml() {
+  return `
+    <span class="flex p-3 rounded-2xl bg-primary/1 text-sm shadow shadow-primary/20 hover:shadow-primary/50 transition-shadow-500">
+      ${fixedColumnIds.map(columnId => `
+        <a href="/c/${columnId}" class="px-2 hover:(bg-primary/10 rounded-md) cursor-pointer transition-all op-70 dark:op-90">
+          ${metadata[columnId].name}
+        </a>
+      `).join("")}
+      <button type="button" class="px-2 hover:(bg-primary/10 rounded-md) op-70 dark:op-90 cursor-pointer transition-all">
+        更多
+      </button>
+      <a href="https://www.binance.com/zh-CN/join?ref=K2A12GI8" target="_blank" rel="noopener noreferrer" class="px-2 hover:(bg-primary/10 rounded-md) op-70 dark:op-90 cursor-pointer transition-all">
+        币安Binance交易所
+      </a>
+      <a href="https://www.firgrouxywebb.com/join/14313340" target="_blank" rel="noopener noreferrer" class="px-2 hover:(bg-primary/10 rounded-md) op-70 dark:op-90 cursor-pointer transition-all">
+        欧易OKX交易所
+      </a>
+    </span>
+  `
 }
 
 export async function renderSourcePage(sourceName: string) {
@@ -38,7 +60,8 @@ export async function renderSourcePage(sourceName: string) {
     contentHtml = generateEmptyHtml(sourceName)
   }
 
-  const finalHtml = html.replace("<div id=\"app\"></div>", `<div id="app">${contentHtml}</div>`)
+  const navBarHtml = `<div class="flex justify-center md:hidden mb-6">${generateNavBarHtml()}</div>`
+  const finalHtml = html.replace("<div id=\"app\"></div>", `<div id="app">${navBarHtml}${contentHtml}</div>`)
   const finalHtmlWithData = finalHtml.replace("</body>", `<script>window.__INITIAL_DATA__ = ${JSON.stringify(newsData)}</script>
 <script>
 function showExternalLinkWarning(url) {
@@ -103,6 +126,7 @@ function generateEmptyHtml(sourceName: string) {
   const color = source?.color || "neutral"
 
   return `
+    <div class="flex justify-center md:hidden mb-6"></div>
     <div class="flex justify-center"><div class="w-full max-w-[350px]">
     <div class="flex flex-col h-500px rounded-2xl p-4 bg-${color}-500 bg-op-40">
       <div class="flex justify-between mx-2 mb-2 items-center">
@@ -130,18 +154,27 @@ function generateHotListHtml(items: any[], sourceName: string) {
   const color = source?.color || "neutral"
 
   return `
+    <div class="flex justify-center md:hidden mb-6"></div>
     <div class="flex justify-center"><div class="w-full max-w-[350px]">
     <div class="flex flex-col h-500px rounded-2xl p-4 bg-${color}-500 bg-op-40">
-      <div class="flex justify-between mx-2 mb-2 items-center">
+      <div class="flex justify-between mx-2 mt-0 mb-2 items-center">
         <div class="flex gap-2 items-center">
-          <div class="w-8 h-8 rounded-full bg-cover" style="background-image: url(/icons/${sourceName.split("-")[0]}.png)"></div>
+          <a class="w-8 h-8 rounded-full bg-cover" target="_blank" href="${source?.home || "#"}" title="${source?.desc || ""}" style="background-image: url(/icons/${sourceName.split("-")[0]}.png)"></a>
           <span class="flex flex-col">
-            <span class="text-xl font-bold">${source?.name || sourceName}</span>
+            <span class="flex items-center gap-2">
+              <span class="text-xl font-bold" title="${source?.desc || ""}">${source?.name || sourceName}</span>
+              ${source?.title ? `<span class="text-sm color-${color} bg-base op-80 bg-op-50! px-1 rounded">${source.title}</span>` : ""}
+            </span>
             <span class="text-xs op-70">刚刚更新</span>
           </span>
         </div>
+        <div class="flex gap-2 text-lg color-${color}">
+          <button type="button" class="btn i-ph:arrow-counter-clockwise-duotone"></button>
+          <button type="button" class="btn i-ph:star-duotone"></button>
+        </div>
       </div>
-      <div class="h-full p-2 overflow-y-auto rounded-2xl bg-base bg-op-70">
+      <div class="h-full p-2 overflow-y-auto rounded-2xl bg-base bg-op-70 scrollbar-hidden">
+        <div>
         <ol class="flex flex-col gap-2">
           ${items.map((item, index) => `
             <a href="/detail?url=${encodeURIComponent(item.url)}" 
@@ -152,11 +185,12 @@ function generateHotListHtml(items: any[], sourceName: string) {
               </span>
               <span class="self-start line-height-none">
                 <span class="mr-2 text-base">${item.title}</span>
-                ${item.extra?.info ? `<span class="text-xs text-neutral-400/80">${item.extra.info}</span>` : ""}
+                ${item.extra?.info ? `<span class="text-xs text-neutral-400/80 truncate align-middle">${item.extra.info}</span>` : ""}
               </span>
             </a>
           `).join("")}
         </ol>
+        </div>
       </div>
     </div>
     </div></div>
@@ -168,6 +202,7 @@ function generateTimelineHtml(items: any[], sourceName: string) {
   const color = source?.color || "neutral"
 
   return `
+    <div class="flex justify-center md:hidden mb-6"></div>
     <div class="flex justify-center"><div class="w-full max-w-[350px]">
     <div class="flex flex-col h-500px rounded-2xl p-4 bg-${color}-500 bg-op-40">
       <div class="flex justify-between mx-2 mb-2 items-center">

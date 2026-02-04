@@ -16,6 +16,12 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
   },
   sourceMap: false,
   publicDir: join(projectDir, "dist"),
+  routeRules: {
+    "/source/**": { isr: false },
+    "/detail": { isr: false },
+    "/sitemap.xml": { isr: false },
+    "/api/**": { isr: false },
+  },
   database: {
     default: {
       connector: "better-sqlite3",

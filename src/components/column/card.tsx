@@ -1,6 +1,6 @@
 import type { NewsItem, SourceID, SourceResponse } from "@shared/types"
 import { useQuery } from "@tanstack/react-query"
-import { AnimatePresence, motion, useInView } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { useWindowSize } from "react-use"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
@@ -19,14 +19,13 @@ export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
 interface NewsCardProps {
   id: SourceID
   setHandleRef?: (ref: HTMLElement | null) => void
+  hasSSRData?: boolean
 }
 
 export const CardWrapper = forwardRef<HTMLElement, ItemsProps>(({ id, isDragging, setHandleRef, style, ...props }, dndRef) => {
   const ref = useRef<HTMLDivElement>(null)
 
-  const inView = useInView(ref, {
-    once: true,
-  })
+  const hasSSRData = typeof window !== "undefined" && (window as any).__INITIAL_DATA__
 
   useImperativeHandle(dndRef, () => ref.current! as HTMLDivElement)
 
@@ -46,23 +45,32 @@ export const CardWrapper = forwardRef<HTMLElement, ItemsProps>(({ id, isDragging
       }}
       {...props}
     >
-      {inView && <NewsCard id={id} setHandleRef={setHandleRef} />}
+      <NewsCard id={id} setHandleRef={setHandleRef} hasSSRData={hasSSRData} />
     </div>
   )
 })
 
-function NewsCard({ id, setHandleRef }: NewsCardProps) {
+function NewsCard({ id, setHandleRef, hasSSRData }: NewsCardProps) {
   const { refresh } = useRefetch()
+  const ssrData = useRef<NewsItem[] | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).__INITIAL_DATA__) {
+      const initialData = (window as any).__INITIAL_DATA__
+      if (Array.isArray(initialData) && initialData.length > 0) {
+        ssrData.current = initialData
+      }
+    }
+  }, [])
+
   const { data, isFetching, isError } = useQuery({
     queryKey: ["source", id],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
 
-      // 检查服务端注入的初始数据
       if (typeof window !== "undefined" && (window as any).__INITIAL_DATA__) {
         const initialData = (window as any).__INITIAL_DATA__
         if (Array.isArray(initialData) && initialData.length > 0) {
-          // 清除初始数据，避免重复使用
           delete (window as any).__INITIAL_DATA__
           return {
             status: "success",
@@ -178,7 +186,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         defer
       >
         <div className={$("transition-opacity-500", isFetching && "op-20")}>
-          {!!data?.items?.length && (sources[id].type === "hottest" ? <NewsListHot items={data.items} /> : <NewsListTimeLine items={data.items} />)}
+          {(!!data?.items?.length || hasSSRData) && (sources[id].type === "hottest" ? <NewsListHot items={data?.items || ssrData.current || []} /> : <NewsListTimeLine items={data?.items || ssrData.current || []} />)}
         </div>
       </OverlayScrollbar>
     </>

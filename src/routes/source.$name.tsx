@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useTitle } from "react-use"
 import { sources } from "@shared/sources"
-import { useEffect, useState } from "react"
 import { NavBar } from "~/components/navbar"
 import { CardWrapper } from "~/components/column/card"
 
@@ -13,19 +12,6 @@ function SourceComponent() {
   const { name } = Route.useParams()
 
   useTitle(`NewsNow | ${sources[name]?.name || name}`)
-
-  const [hasSSRContent, setHasSSRContent] = useState(false)
-
-  useEffect(() => {
-    const appElement = document.getElementById("app")
-    if (appElement && appElement.innerHTML.trim().length > 50) {
-      setHasSSRContent(true)
-    }
-  }, [])
-
-  if (hasSSRContent) {
-    return null
-  }
 
   return (
     <>
