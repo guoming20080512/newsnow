@@ -1,7 +1,7 @@
 import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
-import dayjs from "dayjs/esm"
+import dayjs from "dayjs"
 import { config as dotenvConfig } from "dotenv"
 import { sources } from "../shared/sources"
 
