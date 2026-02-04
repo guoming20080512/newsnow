@@ -14,14 +14,12 @@ const router = createRouter({
 
 const rootElement = document.getElementById("app")!
 
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>,
-  )
-}
+const root = ReactDOM.hydrateRoot(rootElement)
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>,
+)
 
 declare module "@tanstack/react-router" {
   interface Register {

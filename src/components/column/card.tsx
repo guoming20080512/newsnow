@@ -56,6 +56,22 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
     queryKey: ["source", id],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
+
+      // 检查服务端注入的初始数据
+      if (typeof window !== "undefined" && (window as any).__INITIAL_DATA__) {
+        const initialData = (window as any).__INITIAL_DATA__
+        if (Array.isArray(initialData) && initialData.length > 0) {
+          // 清除初始数据，避免重复使用
+          delete (window as any).__INITIAL_DATA__
+          return {
+            status: "success",
+            id,
+            updatedTime: Date.now(),
+            items: initialData as NewsItem[],
+          }
+        }
+      }
+
       let url = `/s?id=${id}`
       const headers: Record<string, any> = {}
       if (refetchSources.has(id)) {
@@ -101,7 +117,6 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
     refetchOnWindowFocus: false,
     retry: false,
   })
-
   const { isFocused, toggleFocus } = useFocusWith(id)
 
   return (
@@ -150,7 +165,6 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
           )}
         </div>
       </div>
-
       <OverlayScrollbar
         className={$([
           "h-full p-2 overflow-y-auto rounded-2xl bg-base bg-op-70!",
@@ -189,7 +203,7 @@ function DiffNumber({ diff }: { diff: number }) {
 
   return (
     <AnimatePresence>
-      { shown && (
+      {shown && (
         <motion.span
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 0.5, y: -7 }}
@@ -226,6 +240,7 @@ function NewsUpdatedTime({ date }: { date: string | number }) {
   const relativeTime = useRelativeTime(date)
   return <>{relativeTime}</>
 }
+
 function NewsListHot({ items }: { items: NewsItem[] }) {
   const { width } = useWindowSize()
   return (

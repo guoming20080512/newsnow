@@ -12,6 +12,7 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
     plugins: [RollopGlob()],
   },
   sourceMap: false,
+  publicDir: join(projectDir, "dist"),
   database: {
     default: {
       connector: "better-sqlite3",
@@ -34,7 +35,6 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
 
 if (process.env.VERCEL) {
   nitroOption.preset = "vercel-edge"
-  // You can use other online database, do it yourself. For more info: https://db0.unjs.io/connectors
   nitroOption.database = undefined
   // nitroOption.vercel = {
   //   config: {
@@ -64,7 +64,6 @@ if (process.env.VERCEL) {
     },
   }
 }
-
 export default function () {
   return viteNitro(nitroOption)
 }
