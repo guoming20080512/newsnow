@@ -55,11 +55,11 @@ async function generateSitemap() {
   const outputPath = path.resolve(__dirname, "../public/sitemap.xml")
   fs.writeFileSync(outputPath, sitemapXml, "utf-8")
   console.log(`Sitemap生成成功，共${urls.length}个URL`)
+  return sitemapXml
 }
 
-generateSitemap()
-
 export default defineEventHandler(async () => {
-  await generateSitemap()
-  return { success: true, message: "Sitemap生成成功" }
+  const sitemapXml = await generateSitemap()
+  setHeader(event, "Content-Type", "application/xml; charset=utf-8")
+  return sitemapXml
 })
