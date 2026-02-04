@@ -2,8 +2,9 @@ import type { NewsItem, SourceID, SourceResponse } from "@shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { AnimatePresence, motion, useInView } from "framer-motion"
 import { useWindowSize } from "react-use"
-import { forwardRef, useImperativeHandle } from "react"
+import { forwardRef, useImperativeHandle, useState } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
+import { ExternalLinkModal } from "../common/external-link-modal"
 import { safeParseString } from "~/utils"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -243,66 +244,101 @@ function NewsUpdatedTime({ date }: { date: string | number }) {
 
 function NewsListHot({ items }: { items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const [modalUrl, setModalUrl] = useState<string | null>(null)
+
+  const handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    e.preventDefault()
+    setModalUrl(url)
+  }
+
+  const closeModal = () => {
+    setModalUrl(null)
+  }
+
   return (
-    <ol className="flex flex-col gap-2">
-      {items?.map((item, i) => (
-        <a
-          href={width < 768 ? item.mobileUrl || item.url : item.url}
-          target="_blank"
-          key={item.id}
-          title={item.extra?.hover}
-          className={$(
-            "flex gap-2 items-center items-stretch relative cursor-pointer [&_*]:cursor-pointer transition-all",
-            "hover:bg-neutral-400/10 rounded-md pr-1 visited:(text-neutral-400)",
-          )}
-        >
-          <span className={$("bg-neutral-400/10 min-w-6 flex justify-center items-center rounded-md text-sm")}>
-            {i + 1}
-          </span>
-          {!!item.extra?.diff && <DiffNumber diff={item.extra.diff} />}
-          <span className="self-start line-height-none">
-            <span className="mr-2 text-base">
-              {item.title}
+    <>
+      <ol className="flex flex-col gap-2">
+        {items?.map((item, i) => (
+          <a
+            key={item.id}
+            href={`/detail?url=${encodeURIComponent(width < 768 ? item.mobileUrl || item.url : item.url)}`}
+            onClick={e => handleItemClick(e, width < 768 ? item.mobileUrl || item.url : item.url)}
+            title={item.extra?.hover}
+            className={$(
+              "flex gap-2 items-center items-stretch relative cursor-pointer [&_*]:cursor-pointer transition-all",
+              "hover:bg-neutral-400/10 rounded-md pr-1 visited:(text-neutral-400)",
+            )}
+          >
+            <span className={$("bg-neutral-400/10 min-w-6 flex justify-center items-center rounded-md text-sm")}>
+              {i + 1}
             </span>
-            <span className="text-xs text-neutral-400/80 truncate align-middle">
-              <ExtraInfo item={item} />
+            {!!item.extra?.diff && <DiffNumber diff={item.extra.diff} />}
+            <span className="self-start line-height-none">
+              <span className="mr-2 text-base">
+                {item.title}
+              </span>
+              <span className="text-xs text-neutral-400/80 truncate align-middle">
+                <ExtraInfo item={item} />
+              </span>
             </span>
-          </span>
-        </a>
-      ))}
-    </ol>
+          </a>
+        ))}
+      </ol>
+      <ExternalLinkModal
+        url={modalUrl || ""}
+        isOpen={!!modalUrl}
+        onClose={closeModal}
+      />
+    </>
   )
 }
 
 function NewsListTimeLine({ items }: { items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const [modalUrl, setModalUrl] = useState<string | null>(null)
+
+  const handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    e.preventDefault()
+    setModalUrl(url)
+  }
+
+  const closeModal = () => {
+    setModalUrl(null)
+  }
+
   return (
-    <ol className="border-s border-neutral-400/50 flex flex-col ml-1">
-      {items?.map(item => (
-        <li key={`${item.id}-${item.pubDate || item?.extra?.date || ""}`} className="flex flex-col">
-          <span className="flex items-center gap-1 text-neutral-400/50 ml--1px">
-            <span className="">-</span>
-            <span className="text-xs text-neutral-400/80">
-              {(item.pubDate || item?.extra?.date) && <NewsUpdatedTime date={(item.pubDate || item?.extra?.date)!} />}
+    <>
+      <ol className="border-s border-neutral-400/50 flex flex-col ml-1">
+        {items?.map(item => (
+          <li key={`${item.id}-${item.pubDate || item?.extra?.date || ""}`} className="flex flex-col">
+            <span className="flex items-center gap-1 text-neutral-400/50 ml--1px">
+              <span className="">-</span>
+              <span className="text-xs text-neutral-400/80">
+                {(item.pubDate || item?.extra?.date) && <NewsUpdatedTime date={(item.pubDate || item?.extra?.date)!} />}
+              </span>
+              <span className="text-xs text-neutral-400/80">
+                <ExtraInfo item={item} />
+              </span>
             </span>
-            <span className="text-xs text-neutral-400/80">
-              <ExtraInfo item={item} />
-            </span>
-          </span>
-          <a
-            className={$(
-              "ml-2 px-1 hover:bg-neutral-400/10 rounded-md visited:(text-neutral-400/80)",
-              "cursor-pointer [&_*]:cursor-pointer transition-all",
-            )}
-            href={width < 768 ? item.mobileUrl || item.url : item.url}
-            title={item.extra?.hover}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.title}
-          </a>
-        </li>
-      ))}
-    </ol>
+            <a
+              href={`/detail?url=${encodeURIComponent(width < 768 ? item.mobileUrl || item.url : item.url)}`}
+              onClick={e => handleItemClick(e, width < 768 ? item.mobileUrl || item.url : item.url)}
+              title={item.extra?.hover}
+              className={$(
+                "ml-2 px-1 hover:bg-neutral-400/10 rounded-md visited:(text-neutral-400/80)",
+                "cursor-pointer [&_*]:cursor-pointer transition-all",
+              )}
+            >
+              {item.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+      <ExternalLinkModal
+        url={modalUrl || ""}
+        isOpen={!!modalUrl}
+        onClose={closeModal}
+      />
+    </>
   )
 }

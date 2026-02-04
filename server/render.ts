@@ -39,7 +39,61 @@ export async function renderSourcePage(sourceName: string) {
   }
 
   const finalHtml = html.replace("<div id=\"app\"></div>", `<div id="app">${contentHtml}</div>`)
-  const finalHtmlWithData = finalHtml.replace("</body>", `<script>window.__INITIAL_DATA__ = ${JSON.stringify(newsData)}</script></body>`)
+  const finalHtmlWithData = finalHtml.replace("</body>", `<script>window.__INITIAL_DATA__ = ${JSON.stringify(newsData)}</script>
+<script>
+function showExternalLinkWarning(url) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2147483647;';
+  overlay.onclick = function(e) {
+    if (e.target === overlay) {
+      document.body.removeChild(overlay);
+    }
+  };
+  
+  const modal = document.createElement('div');
+  modal.className = 'bg-white rounded-2xl shadow-xl max-w-md w-full p-8 mx-4';
+  modal.onclick = function(e) {
+    e.stopPropagation();
+  };
+  
+  modal.innerHTML = \`
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">即将离开本站</h1>      
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+      <p class="text-sm text-gray-500 mb-2">目标网址：</p>
+      <p class="text-sm text-gray-800 break-all font-medium">\${url}</p>
+    </div>
+
+    <div class="space-y-3">
+      <button id="continueBtn" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200">
+        继续访问
+      </button>
+      <button id="cancelBtn" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200">
+        取消
+      </button>
+    </div>
+  \`;
+  
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  
+  document.getElementById('continueBtn').onclick = function() {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    document.body.removeChild(overlay);
+  };
+  
+  document.getElementById('cancelBtn').onclick = function() {
+    document.body.removeChild(overlay);
+  };
+}
+</script></body>`)
 
   return finalHtmlWithData
 }
@@ -90,7 +144,8 @@ function generateHotListHtml(items: any[], sourceName: string) {
       <div class="h-full p-2 overflow-y-auto rounded-2xl bg-base bg-op-70">
         <ol class="flex flex-col gap-2">
           ${items.map((item, index) => `
-            <a href="${item.url}" target="_blank" rel="noopener noreferrer" 
+            <a href="/detail?url=${encodeURIComponent(item.url)}" 
+               onclick="event.preventDefault(); showExternalLinkWarning('${item.url.replace(/'/g, "\\'")}')"
                class="flex gap-2 items-center items-stretch relative cursor-pointer hover:bg-neutral-400/10 rounded-md pr-1">
               <span class="bg-neutral-400/10 min-w-6 flex justify-center items-center rounded-md text-sm">
                 ${index + 1}
@@ -132,8 +187,9 @@ function generateTimelineHtml(items: any[], sourceName: string) {
                 <span>-</span>
                 ${item.extra?.info ? `<span class="text-xs text-neutral-400/80">${item.extra.info}</span>` : ""}
               </span>
-              <a class="ml-2 px-1 hover:bg-neutral-400/10 rounded-md cursor-pointer"
-                 href="${item.url}" target="_blank" rel="noopener noreferrer" title="${item.extra?.hover || ""}">
+              <a href="/detail?url=${encodeURIComponent(item.url)}"
+                 onclick="event.preventDefault(); showExternalLinkWarning('${item.url.replace(/'/g, "\\'")}')"
+                 class="ml-2 px-1 hover:bg-neutral-400/10 rounded-md cursor-pointer" title="${item.extra?.hover || ""}">
                 ${item.title}
               </a>
             </li>
