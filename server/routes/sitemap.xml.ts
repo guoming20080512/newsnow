@@ -1,3 +1,4 @@
+import { defineEventHandler, setHeader } from "h3"
 import { generateSitemap } from "../sitemap-generator"
 
 export default defineEventHandler(async (event) => {

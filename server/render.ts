@@ -7,7 +7,23 @@ import { getCacheTable } from "./database/cache"
 
 async function getTemplate() {
   const templatePath = path.resolve(process.cwd(), "dist/index.html")
-  return fs.promises.readFile(templatePath, "utf-8")
+  try {
+    return await fs.promises.readFile(templatePath, "utf-8")
+  } catch (error) {
+    console.error("Error reading template file:", error instanceof Error ? error.message : String(error))
+    // Return a minimal fallback template
+    return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewsNow</title>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>`
+  }
 }
 
 function generateNavBarHtml() {
@@ -32,37 +48,38 @@ function generateNavBarHtml() {
 }
 
 export async function renderSourcePage(sourceName: string) {
-  const cache = await getCacheTable()
-  let newsData = []
+  try {
+    const cache = await getCacheTable()
+    let newsData = []
 
-  if (cache) {
-    try {
-      const cacheInfo = await cache.get(sourceName)
-      if (cacheInfo && cacheInfo.items.length > 0) {
-        newsData = cacheInfo.items
+    if (cache) {
+      try {
+        const cacheInfo = await cache.get(sourceName)
+        if (cacheInfo && cacheInfo.items.length > 0) {
+          newsData = cacheInfo.items
+        }
+      } catch (error) {
+        console.error("Error fetching from cache:", error instanceof Error ? error.message : String(error))
       }
-    } catch (error) {
-      console.error("Error fetching from cache:", error instanceof Error ? error.message : String(error))
     }
-  }
 
-  const html = await getTemplate()
-  const source = sources[sourceName]
+    const html = await getTemplate()
+    const source = sources[sourceName]
 
-  let contentHtml = ""
-  if (newsData.length > 0) {
-    if (source?.type === "hottest") {
-      contentHtml = generateHotListHtml(newsData, sourceName)
+    let contentHtml = ""
+    if (newsData.length > 0) {
+      if (source?.type === "hottest") {
+        contentHtml = generateHotListHtml(newsData, sourceName)
+      } else {
+        contentHtml = generateTimelineHtml(newsData, sourceName)
+      }
     } else {
-      contentHtml = generateTimelineHtml(newsData, sourceName)
+      contentHtml = generateEmptyHtml(sourceName)
     }
-  } else {
-    contentHtml = generateEmptyHtml(sourceName)
-  }
 
-  const navBarHtml = `<div class="flex justify-center md:hidden mb-6">${generateNavBarHtml()}</div>`
-  const finalHtml = html.replace("<div id=\"app\"></div>", `<div id="app">${navBarHtml}${contentHtml}</div>`)
-  const finalHtmlWithData = finalHtml.replace("</body>", `<script>window.__INITIAL_DATA__ = ${JSON.stringify(newsData)}</script>
+    const navBarHtml = `<div class="flex justify-center md:hidden mb-6">${generateNavBarHtml()}</div>`
+    const finalHtml = html.replace("<div id=\"app\"></div>", `<div id="app">${navBarHtml}${contentHtml}</div>`)
+    const finalHtmlWithData = finalHtml.replace("</body>", `<script>window.__INITIAL_DATA__ = ${JSON.stringify(newsData)}</script>
 <script>
 function showExternalLinkWarning(url) {
   const overlay = document.createElement('div');
@@ -118,7 +135,46 @@ function showExternalLinkWarning(url) {
 }
 </script></body>`)
 
-  return finalHtmlWithData
+    return finalHtmlWithData
+  } catch (error) {
+    console.error("Error rendering source page:", error instanceof Error ? error.message : String(error))
+    // Return minimal fallback HTML if there's any error
+    return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewsNow | ${sourceName}</title>
+</head>
+<body>
+  <div id="app">
+    <div class="flex justify-center md:hidden mb-6"></div>
+    <div class="flex justify-center">
+      <div class="w-full max-w-[350px]">
+        <div class="flex flex-col h-500px rounded-2xl p-4 bg-neutral-500 bg-op-40">
+          <div class="flex justify-between mx-2 mb-2 items-center">
+            <div class="flex gap-2 items-center">
+              <div class="w-8 h-8 rounded-full bg-cover" style="background-image: url(/icons/${sourceName.split("-")[0]}.png)"></div>
+              <span class="flex flex-col">
+                <span class="text-xl font-bold">${sources[sourceName]?.name || sourceName}</span>
+                <span class="text-xs op-70">加载中...</span>
+              </span>
+            </div>
+          </div>
+          <div class="h-full p-2 overflow-y-auto rounded-2xl bg-base bg-op-70">
+            <div class="text-center py-10 text-gray-500">
+              <p>正在获取数据...</p>
+              <p class="text-sm mt-2">如果长时间未加载，请稍后刷新页面</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>window.__INITIAL_DATA__ = []</script>
+</body>
+</html>`
+  }
 }
 
 function generateEmptyHtml(sourceName: string) {

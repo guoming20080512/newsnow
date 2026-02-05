@@ -1,3 +1,5 @@
+import { defineEventHandler, getQuery, setHeader, setResponseStatus } from "h3"
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const targetUrl = query.url as string

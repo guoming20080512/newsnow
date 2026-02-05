@@ -62,6 +62,10 @@ const publicPaths = [
   path.resolve(projectDir, "dist", "output", "public", "sitemap.xml"),
   // 备用路径（考虑可能的不同配置）
   path.resolve(projectDir, "dist", "public", "sitemap.xml"),
+  // Nginx 配置的路径
+  path.resolve(projectDir, "dist", "output", "public", "sitemap.xml"),
+  // 根目录备用
+  path.resolve(projectDir, "sitemap.xml"),
 ]
 
 // 写入文件
@@ -76,15 +80,6 @@ publicPaths.forEach((outputPath) => {
     console.error(`❌ 无法写入到${outputPath}:`, error instanceof Error ? error.message : String(error))
   }
 })
-
-// 额外：直接输出到当前目录作为备用
-const fallbackPath = path.resolve(projectDir, "sitemap.xml")
-try {
-  fs.writeFileSync(fallbackPath, sitemapXml, "utf-8")
-  console.log(`✅ Sitemap生成成功，共${urls.length}个URL，已保存到${fallbackPath}`)
-} catch (error) {
-  console.error(`❌ 无法写入到${fallbackPath}:`, error instanceof Error ? error.message : String(error))
-}
 
 console.log(`\n📊 Sitemap生成完成，共${urls.length}个URL`)
 console.log(`🌐 基础URL: ${BASE_URL}`)
