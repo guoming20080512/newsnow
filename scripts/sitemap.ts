@@ -44,8 +44,14 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
     .join("")}
 </urlset>`
 
-const outputPath = path.resolve(projectDir, "public", "sitemap.xml")
-fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-fs.writeFileSync(outputPath, sitemapXml, "utf-8")
+// 同时生成到 public 目录（开发环境）和 dist/output/public 目录（生产环境）
+const publicPaths = [
+  path.resolve(projectDir, "public", "sitemap.xml"),
+  path.resolve(projectDir, "dist", "output", "public", "sitemap.xml"),
+]
 
-console.log(`Sitemap生成成功，共${urls.length}个URL，已保存到${outputPath}`)
+publicPaths.forEach((outputPath) => {
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+  fs.writeFileSync(outputPath, sitemapXml, "utf-8")
+  console.log(`Sitemap生成成功，共${urls.length}个URL，已保存到${outputPath}`)
+})
