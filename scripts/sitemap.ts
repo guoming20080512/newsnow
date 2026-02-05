@@ -1,10 +1,12 @@
+import process from "node:process"
+import path from "node:path"
+import fs from "node:fs"
 import dayjs from "dayjs"
 import { config as dotenvConfig } from "dotenv"
 import { sources } from "../shared/sources"
-import process from "node:process"
-import path from "node:path"
 
-dotenvConfig({ path: path.resolve(process.cwd(), ".env.server") })
+const projectDir = path.resolve(process.cwd())
+dotenvConfig({ path: path.resolve(projectDir, ".env.server") })
 
 const BASE_URL = (process.env.BASE_URL || "https://news.abfjwndjwkdbwkjdnej.store").replace(/\/+$/, "")
 
@@ -26,4 +28,24 @@ for (const sourceKey of Object.keys(sources)) {
   })
 }
 
-console.log(`Sitemap生成成功，共${urls.length}个URL`)
+const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls
+    .map(
+      url => `
+  <url>
+    <loc>${url.loc}</loc>
+    <lastmod>${url.lastmod}</lastmod>
+    <changefreq>${url.changefreq}</changefreq>
+    <priority>${url.priority}</priority>
+  </url>
+  `,
+    )
+    .join("")}
+</urlset>`
+
+const outputPath = path.resolve(projectDir, "public", "sitemap.xml")
+fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+fs.writeFileSync(outputPath, sitemapXml, "utf-8")
+
+console.log(`Sitemap生成成功，共${urls.length}个URL，已保存到${outputPath}`)

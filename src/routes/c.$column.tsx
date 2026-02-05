@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { Column } from "~/components/column"
 
 export const Route = createFileRoute("/c/$column")({
@@ -13,10 +13,27 @@ export const Route = createFileRoute("/c/$column")({
     },
     stringify: params => params,
   },
-  onError: (error) => {
+  errorComponent: ({ error }: any) => {
     if (error?.routerCode === "PARSE_PARAMS") {
-      throw redirect({ to: "/" })
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
+          <div className="text-6xl mb-4">📂</div>
+          <h1 className="text-2xl font-bold mb-2">分类不存在</h1>
+          <p className="text-neutral-500 mb-4">您访问的分类不存在</p>
+          <button
+            type="button"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-80 transition-opacity"
+            onClick={() => {
+              const nav = Route.useNavigate()
+              nav({ to: "/" })
+            }}
+          >
+            返回首页
+          </button>
+        </div>
+      )
     }
+    throw error
   },
 })
 
